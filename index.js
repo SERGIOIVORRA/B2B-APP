@@ -104,11 +104,12 @@ app.post("/create-order", async (req, res) => {
       variantGID = edges[0].node.id;
     }
 
-    // Creamos el pedido
+    // ===================== AQUÍ ESTABA EL PROBLEMA =====================
+    // Ahora usamos 'order' en vez de 'input'
     const orderData = await callShopify(
       `
-      mutation CreateOrder($input: OrderInput!) {
-        orderCreate(input: $input) {
+      mutation CreateOrder($order: OrderInput!) {
+        orderCreate(order: $order) {
           order {
             id
             name
@@ -122,7 +123,7 @@ app.post("/create-order", async (req, res) => {
       }
       `,
       {
-        input: {
+        order: {
           customerId: customerGID,
           lineItems: [
             {
@@ -135,6 +136,7 @@ app.post("/create-order", async (req, res) => {
         }
       }
     );
+    // ===============================================================
 
     const userErrors = orderData.orderCreate.userErrors || [];
     if (userErrors.length) {
