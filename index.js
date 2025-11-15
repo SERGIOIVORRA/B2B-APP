@@ -104,7 +104,7 @@ app.post("/create-order", async (req, res) => {
     // ===================== CREAR PEDIDO =====================
     const orderData = await callShopify(
       `
-      mutation CreateOrder($order: OrderInput!) {
+      mutation CreateOrder($order: OrderCreateOrderInput!) {
         orderCreate(order: $order) {
           order {
             id
@@ -161,5 +161,3 @@ app.get("/", (_req, res) => {
 app.listen(PORT, () => {
   console.log("Server listening on port", PORT);
 });
-
-
