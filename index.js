@@ -104,11 +104,10 @@ app.post("/create-order", async (req, res) => {
       variantGID = edges[0].node.id;
     }
 
-    // ===================== AQUÍ ESTABA EL PROBLEMA =====================
-    // Ahora usamos 'order' en vez de 'input'
+    // ===================== MUTACIÓN CORREGIDA =====================
     const orderData = await callShopify(
       `
-      mutation CreateOrder($order: OrderInput!) {
+      mutation CreateOrder($order: OrderCreateOrderInput!) {
         orderCreate(order: $order) {
           order {
             id
