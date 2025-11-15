@@ -4,16 +4,13 @@ const cors = require("cors");
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// ⚠ Aquí puedes limitar a tu dominio de Shopify si quieres más seguridad
-// const allowedOrigin = "https://tienda-prueba-app-st.myshopify.com";
-// app.use(cors({ origin: allowedOrigin }));
-app.use(cors()); // De momento abierto para evitar líos de CORS
-
+// CORS (si quieres, aquí podrías limitar a tu dominio de Shopify)
+app.use(cors());
 app.use(express.json());
 
-const SHOP_DOMAIN = process.env.SHOPIFY_STORE_DOMAIN;   // ej: "tienda-prueba-app-st.myshopify.com"
+const SHOP_DOMAIN = process.env.SHOPIFY_STORE_DOMAIN;   // p.ej. "tienda-prueba-app-st.myshopify.com"
 const API_VERSION = process.env.SHOPIFY_API_VERSION || "2024-07";
-const ADMIN_TOKEN = process.env.SHOPIFY_ADMIN_TOKEN;    // tu shpat_... en Render
+const ADMIN_TOKEN = process.env.SHOPIFY_ADMIN_TOKEN;    // shpat_... en Render
 
 async function callShopify(query, variables = {}) {
   if (!SHOP_DOMAIN || !ADMIN_TOKEN) {
@@ -104,15 +101,14 @@ app.post("/create-order", async (req, res) => {
       variantGID = edges[0].node.id;
     }
 
-    // ===================== MUTACIÓN CORREGIDA =====================
+    // ===================== CREAR PEDIDO =====================
     const orderData = await callShopify(
       `
-      mutation CreateOrder($order: OrderCreateOrderInput!) {
+      mutation CreateOrder($order: OrderInput!) {
         orderCreate(order: $order) {
           order {
             id
             name
-            statusUrl
           }
           userErrors {
             field
@@ -135,7 +131,6 @@ app.post("/create-order", async (req, res) => {
         }
       }
     );
-    // ===============================================================
 
     const userErrors = orderData.orderCreate.userErrors || [];
     if (userErrors.length) {
